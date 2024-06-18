@@ -1,0 +1,134 @@
+@base_url = http://localhost:3000
+@content_type = application/json
+
+### Get all events
+GET {{base_url}}/events
+Accept: {{content_type}}
+X-Api-Token: 123
+
+> {%
+  client.test("Response status is 200", function() {
+    client.assert(response.status === 200);
+  });
+  client.global.set("eventId", response.body[0].id);
+%}
+
+### Create events
+POST {{base_url}}/events
+Content-Type: application/json
+X-Api-Token: 123
+
+{
+  "name": "Novo Evento",
+  "date": "2020-01-12T00:00:00",
+  "description": "Descrição do Evento",
+  "price": 10.25
+}
+
+> {%
+  client.test("Response status is 201", function() {
+    client.assert(response.status === 201);
+  });
+  client.global.set("eventId", response.body.id);
+%}
+
+### Get Event By id
+GET {{base_url}}/events/{{eventId}}
+Accept: {{content_type}}
+X-Api-Token: 123
+
+> {%
+  client.test("Response status is 200", function() {
+    client.assert(response.status === 200);
+  });
+  client.global.set("eventId", response.body.id);
+%}
+
+### Update Events
+PATCH {{base_url}}/events/{{eventId}}
+Content-Type: {{content_type}}
+X-Api-Token: 123
+
+{
+  "name": "GP F1 São Paulo 2024",
+  "description": "F1 Grand Prix 2024 of Brasil in São Paulo",
+  "price": 325.99
+}
+
+### Delete Events
+DELETE {{base_url}}/events/{{eventId}}
+Content-Type: {{content_type}}
+X-Api-Token: 123
+
+### Get all stops from events
+GET {{base_url}}/events/{{eventId}}/spots
+Accept: {{content_type}}
+X-Api-Token: 123
+
+> {%
+  client.test("Response status is 200", function() {
+    client.assert(response.status === 200);
+  });
+  client.global.set("spotId", response.body[0].id);
+  client.global.set("spotName", response.body[0].name);
+%}
+
+### Create Spot
+POST {{base_url}}/events/{{eventId}}/spots
+Content-Type: application/json
+X-Api-Token: 123
+
+{
+  "name": "Spot A",
+  "status": "available"
+}
+
+> {%
+  client.test("Response status is 201", function() {
+    client.assert(response.status === 201);
+  });
+  client.global.set("spotId", response.body.id);
+  client.global.set("spotName", response.body.name);
+%}
+
+### Get Spot By id from event
+GET {{base_url}}/events/{{eventId}}/spots/{{spotId}}
+Accept: {{content_type}}
+X-Api-Token: 123
+
+{
+  "name": "Spot A",
+  "status": 0
+}
+
+> {%
+  client.test("Response status is 200", function() {
+    client.assert(response.status === 200);
+  });
+  client.global.set("spotId", response.body.id);
+%}
+
+### Update Spot by id from event
+PATCH {{base_url}}/events/{{eventId}}/spots/{{spotId}}
+Content-Type: {{content_type}}
+X-Api-Token: 123
+
+{
+  "name": "Spot B"
+}
+
+### Delete spot by id from event
+DELETE {{base_url}}/events/{{eventId}}/spots/{{spotId}}
+Content-Type: {{content_type}}
+X-Api-Token: 123
+
+### Create a Reserved
+POST {{base_url}}/events/{{eventId}}/reserve
+Content-Type: application/json
+X-Api-Token: 123
+
+{
+  "spots": ["{{spotName}}"],
+  "ticket_kind": "full",
+  "email": "test@test.com"
+}

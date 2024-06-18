@@ -1,0 +1,136 @@
+@base_url = http://localhost:3001
+@content_type = application/json
+
+### Pegar todos eventos
+GET {{base_url}}/eventos
+Accept: {{content_type}}
+X-Api-Token: 321
+
+> {%
+  client.test("Response status is 200", function() {
+    client.assert(response.status === 200);
+  });
+  client.global.set("eventoId", response.body[0].id);
+%}
+
+### Criar eventos
+POST {{base_url}}/eventos
+Content-Type: application/json
+X-Api-Token: 321
+
+{
+  "nome": "Novo Evento",
+  "data": "2020-01-12T00:00:00",
+  "descricao": "Descrição do Evento",
+  "preco": 10.25
+}
+
+> {%
+  client.test("Response status is 201", function() {
+    client.assert(response.status === 201);
+  });
+  client.global.set("eventoId", response.body.id);
+%}
+
+### Pegar evento por id
+GET {{base_url}}/eventos/{{eventoId}}
+Accept: {{content_type}}
+X-Api-Token: 321
+
+> {%
+  client.test("Response status is 200", function() {
+    client.assert(response.status === 200);
+  });
+  client.global.set("eventoId", response.body.id);
+%}
+
+### Alterar evento
+PATCH {{base_url}}/eventos/{{eventoId}}
+Content-Type: {{content_type}}
+X-Api-Token: 321
+
+{
+  "nome": "GP F1 São Paulo 2024",
+  "descricacao": "F1 Grand Prix 2024 of Brasil in São Paulo",
+  "preco": 325.99
+}
+
+### Deletar um evento
+DELETE {{base_url}}/eventos/{{eventoId}}
+Content-Type: {{content_type}}
+X-Api-Token: 321
+
+
+### Pegar todos os lugares de um evento
+GET {{base_url}}/eventos/{{eventoId}}/lugares
+Accept: {{content_type}}
+X-Api-Token: 321
+
+> {%
+  client.test("Response status is 200", function() {
+    client.assert(response.status === 200);
+  });
+  client.global.set("lugarId", response.body[0].id);
+  client.global.set("nomeLugar", response.body[0].name);
+%}
+
+### Criar Lugar para o evento
+POST {{base_url}}/eventos/{{eventoId}}/lugares
+Content-Type: application/json
+X-Api-Token: 321
+
+{
+  "nome": "Spot A",
+  "status": "available"
+}
+
+> {%
+  client.test("Response status is 201", function() {
+    client.assert(response.status === 201);
+  });
+  client.global.set("lugarId", response.body.id);
+  client.global.set("nomeLugar", response.body.nome);
+%}
+
+### Pegar um lugar de um evento
+GET {{base_url}}/eventos/{{eventoId}}/lugares/{{lugarId}}
+Accept: {{content_type}}
+X-Api-Token: 321
+
+{
+  "nome": "Spot A",
+  "status": 0
+}
+
+> {%
+  client.test("Response status is 200", function() {
+    client.assert(response.status === 200);
+  });
+  client.global.set("lugarId", response.body.id);
+  client.global.set("nomeLugar", response.body.name);
+%}
+
+### Alterar o lugar para o evento
+PATCH {{base_url}}/eventos/{{eventoId}}/lugares/{{lugarId}}
+Content-Type: {{content_type}}
+X-Api-Token: 321
+
+{
+  "nome": "Spot B"
+}
+
+### Deletar o lugar do evento
+DELETE {{base_url}}/eventos/{{eventoId}}/lugares/{{lugarId}}
+Content-Type: {{content_type}}
+X-Api-Token: 321
+
+### Reservar lugares para evento
+POST {{base_url}}/eventos/{{eventoId}}/reservar
+Content-Type: application/json
+X-Api-Token: 321
+
+{
+  "lugares": ["{{nomeLugar}}"],
+  "tipo_ingresso": "inteira",
+  "email": "test@test.com"
+}
