@@ -1,0 +1,102 @@
+consumers:
+  - custom_id: nextjs
+    keyauth_credentials:
+      - key: '123'
+    username: nextjs
+plugins:
+  - config:
+      echo_downstream: false
+      generator: uuid#counter
+      header_name: Kong-Request-ID
+    consumer: nextjs
+    enabled: true
+    name: correlation-id
+    protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+    route: events
+    service: events
+services:
+  - connect_timeout: 60000
+    enabled: true
+    host: events
+    name: events
+    plugins:
+      - config:
+          add:
+            body: []
+            headers:
+              - 'X-Api-Token: 123'
+            querystring: []
+          append:
+            body: []
+            headers: []
+            querystring: []
+          http_method: null
+          remove:
+            body: []
+            headers: []
+            querystring: []
+          rename:
+            body: []
+            headers: []
+            querystring: []
+          replace:
+            body: []
+            headers: []
+            querystring: []
+            uri: null
+        enabled: true
+        name: request-transformer
+        protocols:
+          - grpc
+          - grpcs
+          - http
+          - https
+    port: 8080
+    protocol: http
+    read_timeout: 60000
+    retries: 5
+    routes:
+      - headers:
+          X-Api-Token:
+            - '123'
+        https_redirect_status_code: 426
+        methods:
+          - GET
+          - POST
+          - PATCH
+          - OPTIONS
+          - HEAD
+        name: events
+        path_handling: v0
+        paths:
+          - /events
+        plugins:
+          - config:
+              anonymous: null
+              hide_credentials: false
+              key_in_body: false
+              key_in_header: true
+              key_in_query: false
+              key_names:
+                - '123'
+              realm: null
+              run_on_preflight: true
+            enabled: true
+            name: key-auth
+            protocols:
+              - grpc
+              - grpcs
+              - http
+              - https
+        preserve_host: false
+        protocols:
+          - http
+        regex_priority: 0
+        request_buffering: true
+        response_buffering: true
+        strip_path: true
+    write_timeout: 60000
